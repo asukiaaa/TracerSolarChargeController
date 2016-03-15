@@ -83,6 +83,7 @@ float   charge_current;     // Voltage of the solar panel.
 #include "TracerSolarChargeController.h"
 
 TracerSolarChargeController charge_controller(10, 11); // TX, RX
+
 void setup() {
   Serial.begin(57600);
 }
