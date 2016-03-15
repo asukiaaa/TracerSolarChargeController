@@ -26,7 +26,7 @@ class TracerSolarChargeController {
   float battery_max;
   uint8_t full;
   uint8_t charging;
-  int8_t battery_temp;
+  int8_t temp;
   float charge_current;
 };
 

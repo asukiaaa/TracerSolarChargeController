@@ -81,7 +81,7 @@ void TracerSolarChargeController::update() {
   // 26 over discharge yes/no
   full = buff[27];
   charging = buff[28];
-  battery_temp = buff[29] - 30;
+  temp = buff[29] - 30;
   charge_current = to_float(buff, 30);
 
   //delay(1000);
@@ -102,8 +102,8 @@ void TracerSolarChargeController::serial_out(HardwareSerial* serial) {
   serial->print("Battery full: ");
   serial->println(full ? "yes " : "no" );
 
-  serial->print("Battery temperature: ");
-  serial->println(battery_temp);
+  serial->print("Temperature: ");
+  serial->println(temp);
 
   serial->print("PV voltage: ");
   serial->println(pv);
