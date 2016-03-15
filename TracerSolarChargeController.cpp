@@ -19,8 +19,9 @@ TracerSolarChargeController::TracerSolarChargeController(uint8_t tx_pin, uint8_t
   id = 0x16;
   //cmd = tracer_cmd;
 
-  // init battery history
-  for(int i=0; i< 3; i++) {
+  // init values
+  battery = 0;
+  for(int i = 0; i < 3; i++) {
     battery_history[i] = 0;
   }
 }
@@ -40,7 +41,7 @@ void TracerSolarChargeController::update() {
   int read = 0;
   int i;
 
-  for (i = 0; i < 255; i++){
+  for ( i = 0; i < 255; i++) {
     if (my_serial->available()) {
       buff[read] = my_serial->read();
       read++;
@@ -59,6 +60,13 @@ void TracerSolarChargeController::update() {
   //}
   //Serial.println();
 
+  // update history
+  for ( i = 2; i > 0; i--) {
+    battery_history[i] = battery_history[i-1];
+    //Serial.print(i);
+  }
+  battery_history[0] = battery;
+
   battery = to_float(buff, 9);
   pv = to_float(buff, 11);
   //13-14 reserved
@@ -75,13 +83,6 @@ void TracerSolarChargeController::update() {
   charging = buff[28];
   battery_temp = buff[29] - 30;
   charge_current = to_float(buff, 30);
-
-  // update history
-  for(i=2; i>0; i--) {
-    battery_history[i] = battery_history[i-1];
-    //Serial.print(i);
-  }
-  battery_history[0] = battery;
 
   //delay(1000);
 }
