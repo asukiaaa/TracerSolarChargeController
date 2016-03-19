@@ -20,8 +20,8 @@ Pins of the ports have the following role.
 You can connect the pins and arduino like this.
 - +12v -> 3.3v regulator -> Arduino 3.3v
 - GND -> Arduino GND
-- TXD -> Arduino software serial RX pin
-- RXD -> Arduino software serial TX pin
+- TXD -> Arduino D19(SoftwareSerial RX)
+- RXD -> Arduino D11(SoftwareSerial TX)
 
 # Useage
 ## Include
@@ -33,9 +33,9 @@ This library uses SoftwareSerial, so please include also that.
 
 ## Definition
 ```c
-TracerSolarChargeController charge_controller(10, 11); // TX, RX
+TracerSolarChargeController charge_controller(10, 11); // RX, TX
 ```
-TX and RX pin numbers are needed to create an instance.
+RX and TX pin numbers are needed to create an instance.
 
 ## Update
 ```c
@@ -82,7 +82,7 @@ float   charge_current;     // Voltage of the solar panel.
 #include <SoftwareSerial.h>
 #include "TracerSolarChargeController.h"
 
-TracerSolarChargeController charge_controller(10, 11); // TX, RX
+TracerSolarChargeController charge_controller(10, 11); // RX, TX
 void setup() {
   Serial.begin(57600);
 }

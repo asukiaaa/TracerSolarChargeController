@@ -14,7 +14,7 @@ class TracerSolarChargeController {
   int my_serial_speed;
 
   public:
-  TracerSolarChargeController(uint8_t tx_pin, uint8_t rx_pin);
+  TracerSolarChargeController(uint8_t rx_pin, uint8_t tx_pin);
   void update();
   void serial_out(HardwareSerial* serial);
 
