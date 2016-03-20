@@ -11,7 +11,7 @@ static const uint8_t tracer_start[] =
     0xEB, 0x90, 0xEB, 0x90, 0xEB, 0x90 };
 static const uint8_t tracer_cmd[] = { 0xA0, 0x00, 0xB1, 0xA7, 0x7F };
 
-TracerSolarChargeController::TracerSolarChargeController(uint8_t rt_pin, uint8_t tr_pin) {
+TracerSolarChargeController::TracerSolarChargeController(uint8_t rx_pin, uint8_t tx_pin) {
   my_serial = new SoftwareSerial(rx_pin, tx_pin);
   my_serial_speed = 9600;
 
