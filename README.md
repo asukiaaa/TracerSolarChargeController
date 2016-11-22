@@ -20,7 +20,7 @@ Pins of the ports have the following role.
 You can connect the pins and arduino like this.
 - +12v -> 3.3v regulator -> Arduino 3.3v
 - GND -> Arduino GND
-- TXD -> Arduino D19(SoftwareSerial RX)
+- TXD -> Arduino D10(SoftwareSerial RX)
 - RXD -> Arduino D11(SoftwareSerial TX)
 
 # Useage
