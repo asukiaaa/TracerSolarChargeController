@@ -5,10 +5,22 @@ static const uint8_t tracer_start[] =
     0xEB, 0x90, 0xEB, 0x90, 0xEB, 0x90 };
 static const uint8_t tracer_cmd[] = { 0xA0, 0x00, 0xB1, 0xA7, 0x7F };
 
-TracerSolarChargeController::TracerSolarChargeController(uint8_t rx_pin, uint8_t tx_pin) {
-  my_serial = new SoftwareSerial(rx_pin, tx_pin);
-  my_serial_speed = 9600;
+TracerSolarChargeController::TracerSolarChargeController(HardwareSerial* hardSerial) {
+  my_serial = new SomeSerial(hardSerial);
+  initValues();
+}
 
+TracerSolarChargeController::TracerSolarChargeController(SoftwareSerial* softSerial) {
+  my_serial = new SomeSerial(softSerial);
+  initValues();
+}
+
+TracerSolarChargeController::TracerSolarChargeController(uint8_t rx_pin, uint8_t tx_pin) {
+  my_serial = new SomeSerial(rx_pin, tx_pin);
+  initValues();
+}
+
+void TracerSolarChargeController::initValues() {
   //start = tracer_start;
   id = 0x16;
   //cmd = tracer_cmd;
@@ -20,6 +32,10 @@ TracerSolarChargeController::TracerSolarChargeController(uint8_t rx_pin, uint8_t
   }
 }
 
+void TracerSolarChargeController::begin() {
+  my_serial->begin(TRACER_SERIAL_SPEED);
+}
+
 float TracerSolarChargeController::to_float(uint8_t* buffer, int offset){
   unsigned short full = buffer[offset+1] << 8 | buff[offset];
   return full / 100.0;
@@ -27,7 +43,9 @@ float TracerSolarChargeController::to_float(uint8_t* buffer, int offset){
 
 
 void TracerSolarChargeController::update() {
-  my_serial->begin(my_serial_speed);
+  if (my_serial->isSoftwareSerial()) {
+    my_serial->thisSoftwareSerial->listen();
+  }
   my_serial->write(tracer_start, sizeof(tracer_start));
   my_serial->write(id);
   my_serial->write(tracer_cmd, sizeof(tracer_cmd));
@@ -82,6 +100,19 @@ void TracerSolarChargeController::update() {
 }
 
 void TracerSolarChargeController::serial_out(HardwareSerial* serial) {
+  // Causes memory overflow?
+  serial_out(new SomeSerial(serial));
+}
+
+#ifdef __USB_SERIAL_AVAILABLE__
+void TracerSolarChargeController::serial_out(Serial_* serial) {
+  // Causes memory overflow?
+  serial_out(new SomeSerial(serial));
+}
+#endif
+
+
+void TracerSolarChargeController::serial_out(SomeSerial* serial) {
   serial->print("Load is ");
   serial->println(buff[21] ? "on" : "off");
 
