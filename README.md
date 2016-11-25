@@ -1,51 +1,74 @@
 # TracerSolarChargeController
 This is a library to read data from EP Solar Tracer Solar Charge Controller with using Arduino.
 
+# Requirement
+To use this library, [SomeSerial](https://github.com/asukiaaa/SomeSerial) library is needed.
+Please install also that.
+
 # Connection between charge controller and arduino.
 Tracer Solar Charge Controller has a LAN cable port.
 
 Pins of the ports have the following role.
 
-| Pins   | Role      |
-| ------ | --------- |
-| 1      | +12v      |
-| 2      | GND       |
-| 3      | +12V      |
-| 4      | GND       |
-| 5      | TXD(3.3V) |
-| 6      | RXD(3.3V) |
-| 7      | GND       |
-| 8      | GND       |
+| Pin num | Role      |
+| ------- | --------- |
+| 1       | +12v      |
+| 2       | ?         |
+| 3       | +12V      |
+| 4       | GND       |
+| 5       | TXD(3.3V) |
+| 6       | RXD(3.3V) |
+| 7       | GND       |
+| 8       | GND       |
 
 You can connect the pins and arduino like this.
-- +12v -> 3.3v regulator -> Arduino 3.3v
+
+For 5v Arduino.
+- +12v -> 5v regulator -> Arduino VIN
 - GND -> Arduino GND
-- TXD -> Arduino D10(SoftwareSerial RX)
-- RXD -> Arduino D11(SoftwareSerial TX)
+- TXD -> Arduino RX
+- /- Arduino TX (5v)<br>
+  [ 1K register ]<br>
+  |- RXD (3.3v)<br>
+  [ 2K register ]<br>
+  \\- GND<br>
+
+For 3.3v Arduino.
+- +12v -> 3.3v regulator -> Arduino VIN
+- GND -> Arduino GND
+- TXD -> Arduino RX
+- RXD -> Arduino TX
 
 # Useage
 ## Include
 ```c
-#include <SoftwareSerial.h>
 #include "TracerSolarChargeController.h"
 ```
-This library uses SoftwareSerial, so please include also that.
 
 ## Definition
+### As SoftwareSerial
 ```c
-TracerSolarChargeController charge_controller(10, 11); // RX, TX
+TracerSolarChargeController chargeController(10, 11); // RX, TX
 ```
-RX and TX pin numbers are needed to create an instance.
+
+### As HardwareSerial
+```c
+TracerSolarChargeController chargeController(&Serial);
+```
 
 ## Update
 ```c
-charge_controller.update();
+if (chargeController.update()) {
+  // succeeded process
+} else {
+  // failed process
+}
 ```
 The instance communicates with charge controller and updates its values.
 
-## Serial out
+## Print info
 ```c
-charge_controller.serial_out(&Serial);
+chargeController.printInfo(&Serial);
 ```
 You can see wall values of charge controller via serial output.
 ````
@@ -65,39 +88,42 @@ float current_voltage = carge_controller.battery;
 ```
 You can check public values.
 ```c
-float   battery;            // Current battery voltage.
-float   battery_history[3]; // History of battery voltage.
-float   pv;                 // ?
-float   load_current;       // ?
-float   over_discharge;     // ?
-float   battery_max;        // Voltage to stop charging by the controller.
-uint8_t full;               // Return true if the battery is full.
-uint8_t charging;           // Return true if the controller is charging.
-int8_t  temp;               // Temperature of the controller.
-float   charge_current;     // Voltage of the solar panel.
+float   battery;           // Current battery voltage.
+float   batteryHistory[3]; // History of battery voltage.
+float   pv;                // ?
+float   loadCurrent;       // ?
+float   overDischarge;     // ?
+float   batteryMax;        // Voltage to stop charging by the controller.
+uint8_t full;              // Return true if the battery is full.
+uint8_t charging;          // Return true if the controller is charging.
+int8_t  temp;              // Temperature of the controller.
+float   chargeCurrent;     // Voltage of the solar panel.
 ```
 
 # Example
 ```c
-#include <SoftwareSerial.h>
 #include "TracerSolarChargeController.h"
 
-TracerSolarChargeController charge_controller(10, 11); // RX, TX
+TracerSolarChargeController chargeController(10, 11); // RX, TX
 
 void setup() {
   Serial.begin(57600);
 }
 
 void loop() {
-  charge_controller.update();
-  charge_controller.serial_out(&Serial);
+  if (chargeController.update()) {
+    chargeController.printInfo(&Serial);
 
-  if ( charge_controller.battery > 26.3 ) {
-    Serial.println('Battery voltage is high!')
-  } else if ( charge_controller.battery < 24.0 ) {
-    Serial.println('Battery voltage is low!')
+    if ( chargeController.battery > 26.3 ) {
+      Serial.println('Battery voltage is high!');
+    } else if ( chargeController.battery < 24.0 ) {
+      Serial.println('Battery voltage is low!');
+    } else {
+      Serial.println('Battery voltage is normal.');
+    }
+
   } else {
-    Serial.println('Battery voltage is normal.')
+    Serial.println("failed to update");
   }
 
   delay(5000);
