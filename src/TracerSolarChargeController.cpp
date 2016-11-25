@@ -1,9 +1,3 @@
-/*
-  TracerSolarChargeController
-  2016.03
-  Written by Asuki Kono.
-  This is a library to read data from EP Solar Tracer Solar Charge Controller.
- */
 #include "TracerSolarChargeController.h"
 
 static const uint8_t tracer_start[] =
