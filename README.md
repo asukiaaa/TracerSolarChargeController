@@ -108,4 +108,5 @@ void loop() {
 MIT
 
 # References
-https://github.com/xxv/tracer
+- https://github.com/xxv/tracer
+- [Tracer-2210RN / Tracer-2215RN](http://www.epsolarpv.com/en/index.php/Product/pro_content/id/157/am_id/136)
