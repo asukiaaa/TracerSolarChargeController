@@ -9,35 +9,35 @@ class TracerSolarChargeController {
   public:
   TracerSolarChargeController(HardwareSerial* hardSerial);
   TracerSolarChargeController(SoftwareSerial* softSerial);
-  TracerSolarChargeController(uint8_t rx_pin, uint8_t tx_pin);
+  TracerSolarChargeController(uint8_t rx, uint8_t tx);
   void begin();
   void update();
-  void serial_out(HardwareSerial* serial);
+  void printInfo(HardwareSerial* serial);
 #ifdef __USB_SERIAL_AVAILABLE__
-  void serial_out(Serial_* serial);
+  void printInfo(Serial_* serial);
 #endif
 
   float battery;
-  float battery_history[3];
+  float batteryHistory[3];
   float pv;
-  float load_current;
-  float over_discharge;
-  float battery_max;
+  float loadCurrent;
+  float overDischarge;
+  float batteryMax;
   uint8_t full;
   uint8_t charging;
   int8_t temp;
-  float charge_current;
+  float chargeCurrent;
 
   private:
   void initValues();
-  void serial_out(SomeSerial* serial);
-  SomeSerial* my_serial;
+  void printInfo(SomeSerial* serial);
+  SomeSerial* thisSerial;
 
   //static const uint8_t* start;
   uint8_t id;
   //static const uint8_t* cmd;
   uint8_t buff[128];
-  float to_float(uint8_t* buffer, int offset);
+  float toFloat(uint8_t* buffer, int offset);
 };
 
 #endif

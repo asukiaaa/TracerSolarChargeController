@@ -1,67 +1,67 @@
 #include "TracerSolarChargeController.h"
 
-static const uint8_t tracer_start[] =
+static const uint8_t tracerStart[] =
   { 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55,
     0xEB, 0x90, 0xEB, 0x90, 0xEB, 0x90 };
-static const uint8_t tracer_cmd[] = { 0xA0, 0x00, 0xB1, 0xA7, 0x7F };
+static const uint8_t tracerCmd[] = { 0xA0, 0x00, 0xB1, 0xA7, 0x7F };
 
 TracerSolarChargeController::TracerSolarChargeController(HardwareSerial* hardSerial) {
-  my_serial = new SomeSerial(hardSerial);
+  thisSerial = new SomeSerial(hardSerial);
   initValues();
 }
 
 TracerSolarChargeController::TracerSolarChargeController(SoftwareSerial* softSerial) {
-  my_serial = new SomeSerial(softSerial);
+  thisSerial = new SomeSerial(softSerial);
   initValues();
 }
 
-TracerSolarChargeController::TracerSolarChargeController(uint8_t rx_pin, uint8_t tx_pin) {
-  my_serial = new SomeSerial(rx_pin, tx_pin);
+TracerSolarChargeController::TracerSolarChargeController(uint8_t rx, uint8_t tx) {
+  thisSerial = new SomeSerial(rx, tx);
   initValues();
 }
 
 void TracerSolarChargeController::initValues() {
-  //start = tracer_start;
+  //start = tracerStart;
   id = 0x16;
-  //cmd = tracer_cmd;
+  //cmd = tracerCmd;
 
   // init values
   battery = 0;
   for(int i = 0; i < 3; i++) {
-    battery_history[i] = 0;
+    batteryHistory[i] = 0;
   }
 }
 
 void TracerSolarChargeController::begin() {
-  my_serial->begin(TRACER_SERIAL_SPEED);
+  thisSerial->begin(TRACER_SERIAL_SPEED);
 }
 
-float TracerSolarChargeController::to_float(uint8_t* buffer, int offset){
+float TracerSolarChargeController::toFloat(uint8_t* buffer, int offset){
   unsigned short full = buffer[offset+1] << 8 | buff[offset];
   return full / 100.0;
 }
 
 
 void TracerSolarChargeController::update() {
-  if (my_serial->isSoftwareSerial()) {
-    my_serial->thisSoftwareSerial->listen();
+  if (thisSerial->isSoftwareSerial()) {
+    thisSerial->thisSoftwareSerial->listen();
   }
-  my_serial->write(tracer_start, sizeof(tracer_start));
-  my_serial->write(id);
-  my_serial->write(tracer_cmd, sizeof(tracer_cmd));
+  thisSerial->write(tracerStart, sizeof(tracerStart));
+  thisSerial->write(id);
+  thisSerial->write(tracerCmd, sizeof(tracerCmd));
 
   int read = 0;
   int i;
 
   for ( i = 0; i < 255; i++) {
-    if (my_serial->available()) {
-      buff[read] = my_serial->read();
+    if (thisSerial->available()) {
+      buff[read] = thisSerial->read();
       read++;
     }
   }
   // Close each software serial after communication
   // to activate multiple software serial
-  my_serial->end();
+  thisSerial->end();
 
   //Serial.print("Read ");
   //Serial.print(read);
@@ -74,17 +74,17 @@ void TracerSolarChargeController::update() {
 
   // update history
   for ( i = 2; i > 0; i--) {
-    battery_history[i] = battery_history[i-1];
+    batteryHistory[i] = batteryHistory[i-1];
     //Serial.print(i);
   }
-  battery_history[0] = battery;
+  batteryHistory[0] = battery;
 
-  battery = to_float(buff, 9);
-  pv = to_float(buff, 11);
+  battery = toFloat(buff, 9);
+  pv = toFloat(buff, 11);
   //13-14 reserved
-  load_current = to_float(buff, 15);
-  over_discharge = to_float(buff, 17);
-  battery_max = to_float(buff, 19);
+  loadCurrent = toFloat(buff, 15);
+  overDischarge = toFloat(buff, 17);
+  batteryMax = toFloat(buff, 19);
   // 21 load on/off
   // 22 overload yes/no
   // 23 load short yes/no
@@ -94,35 +94,35 @@ void TracerSolarChargeController::update() {
   full = buff[27];
   charging = buff[28];
   temp = buff[29] - 30;
-  charge_current = to_float(buff, 30);
+  chargeCurrent = toFloat(buff, 30);
 
   //delay(1000);
 }
 
-void TracerSolarChargeController::serial_out(HardwareSerial* serial) {
+void TracerSolarChargeController::printInfo(HardwareSerial* serial) {
   // Causes memory overflow?
-  serial_out(new SomeSerial(serial));
+  printInfo(new SomeSerial(serial));
 }
 
 #ifdef __USB_SERIAL_AVAILABLE__
-void TracerSolarChargeController::serial_out(Serial_* serial) {
+void TracerSolarChargeController::printInfo(Serial_* serial) {
   // Causes memory overflow?
-  serial_out(new SomeSerial(serial));
+  printInfo(new SomeSerial(serial));
 }
 #endif
 
 
-void TracerSolarChargeController::serial_out(SomeSerial* serial) {
+void TracerSolarChargeController::printInfo(SomeSerial* serial) {
   serial->print("Load is ");
   serial->println(buff[21] ? "on" : "off");
 
   serial->print("Load current: ");
-  serial->println(load_current);
+  serial->println(loadCurrent);
 
   serial->print("Battery level: ");
   serial->print(battery);
   serial->print("/");
-  serial->println(battery_max);
+  serial->println(batteryMax);
 
   serial->print("Battery full: ");
   serial->println(full ? "yes " : "no" );
@@ -137,5 +137,5 @@ void TracerSolarChargeController::serial_out(SomeSerial* serial) {
   serial->println(charging ? "yes" : "no" );
 
   serial->print("Charge current: ");
-  serial->println(charge_current);
+  serial->println(chargeCurrent);
 }
