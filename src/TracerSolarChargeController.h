@@ -11,7 +11,7 @@ class TracerSolarChargeController {
   TracerSolarChargeController(SoftwareSerial* softSerial);
   TracerSolarChargeController(uint8_t rx, uint8_t tx);
   void begin();
-  void update();
+  bool update();
   void printInfo(HardwareSerial* serial);
 #ifdef __USB_SERIAL_AVAILABLE__
   void printInfo(Serial_* serial);

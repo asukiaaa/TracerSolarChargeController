@@ -42,13 +42,21 @@ float TracerSolarChargeController::toFloat(uint8_t* buffer, int offset){
 }
 
 
-void TracerSolarChargeController::update() {
+bool TracerSolarChargeController::update() {
+  // Listen to thisSerial if it is SoftwareSerial
   if (thisSerial->isSoftwareSerial()) {
     thisSerial->thisSoftwareSerial->listen();
   }
+
+  // Crear buffer
+  if (thisSerial->available()) {
+    thisSerial->read();
+  }
+
   thisSerial->write(tracerStart, sizeof(tracerStart));
   thisSerial->write(id);
   thisSerial->write(tracerCmd, sizeof(tracerCmd));
+  delay(10);
 
   int read = 0;
   int i;
@@ -57,11 +65,13 @@ void TracerSolarChargeController::update() {
     if (thisSerial->available()) {
       buff[read] = thisSerial->read();
       read++;
+      delay(2);
     }
   }
-  // Close each software serial after communication
-  // to activate multiple software serial
-  thisSerial->end();
+
+  if (read < 30) {
+    return false;
+  }
 
   //Serial.print("Read ");
   //Serial.print(read);
@@ -96,7 +106,7 @@ void TracerSolarChargeController::update() {
   temp = buff[29] - 30;
   chargeCurrent = toFloat(buff, 30);
 
-  //delay(1000);
+  return true;
 }
 
 void TracerSolarChargeController::printInfo(HardwareSerial* serial) {
