@@ -54,7 +54,7 @@ bool TracerSolarChargeController::update() {
   thisSerial->write(tracerStart, sizeof(tracerStart));
   thisSerial->write(id);
   thisSerial->write(tracerCmd, sizeof(tracerCmd));
-  delay(10);
+  delay(100);
 
   int read = 0;
   int i;
