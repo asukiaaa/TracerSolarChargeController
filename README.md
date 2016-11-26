@@ -77,7 +77,7 @@ Load current: 0.02
 Battery level: 25.07/29.16
 Battery full: no
 Temperature: 14
-PV voltage: 0.30
+Panel voltage: 0.30
 Charging: no
 Charge current: 0.00
 ````

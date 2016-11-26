@@ -26,10 +26,8 @@ void TracerSolarChargeController::initValues() {
   //cmd = tracerCmd;
 
   // init values
-  battery = 0;
-  for(int i = 0; i < 3; i++) {
-    batteryHistory[i] = 0;
-  }
+  batteryVoltage = 0;
+  panelVoltage = 0;
 }
 
 void TracerSolarChargeController::begin() {
@@ -73,24 +71,8 @@ bool TracerSolarChargeController::update() {
     return false;
   }
 
-  //Serial.print("Read ");
-  //Serial.print(read);
-  //Serial.println(" bytes");
-  //for (int i = 0; i < read; i++){
-  //   Serial.print(buff[i], HEX);
-  //   Serial.print(" ");
-  //}
-  //Serial.println();
-
-  // update history
-  for ( i = 2; i > 0; i--) {
-    batteryHistory[i] = batteryHistory[i-1];
-    //Serial.print(i);
-  }
-  batteryHistory[0] = battery;
-
-  battery = toFloat(buff, 9);
-  pv = toFloat(buff, 11);
+  batteryVoltage = toFloat(buff, 9);
+  panelVoltage = toFloat(buff, 11);
   //13-14 reserved
   loadCurrent = toFloat(buff, 15);
   overDischarge = toFloat(buff, 17);
@@ -104,7 +86,7 @@ bool TracerSolarChargeController::update() {
   full = buff[27];
   charging = buff[28];
   temp = buff[29] - 30;
-  chargeCurrent = toFloat(buff, 30);
+  chargeAmpere = toFloat(buff, 30);
 
   return true;
 }
@@ -121,7 +103,6 @@ void TracerSolarChargeController::printInfo(Serial_* serial) {
 }
 #endif
 
-
 void TracerSolarChargeController::printInfo(SomeSerial* serial) {
   serial->print("Load is ");
   serial->println(buff[21] ? "on" : "off");
@@ -130,7 +111,7 @@ void TracerSolarChargeController::printInfo(SomeSerial* serial) {
   serial->println(loadCurrent);
 
   serial->print("Battery level: ");
-  serial->print(battery);
+  serial->print(batteryVoltage);
   serial->print("/");
   serial->println(batteryMax);
 
@@ -140,12 +121,12 @@ void TracerSolarChargeController::printInfo(SomeSerial* serial) {
   serial->print("Temperature: ");
   serial->println(temp);
 
-  serial->print("PV voltage: ");
-  serial->println(pv);
+  serial->print("Panel voltage: ");
+  serial->println(panelVoltage);
 
   serial->print("Charging: ");
   serial->println(charging ? "yes" : "no" );
 
-  serial->print("Charge current: ");
-  serial->println(chargeCurrent);
+  serial->print("Charge ampere: ");
+  serial->println(chargeAmpere);
 }
