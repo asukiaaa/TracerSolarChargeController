@@ -2,6 +2,9 @@
 
 TracerSolarChargeController chargeController(10, 11); // RX, TX
 
+// For Arduino Leonardo etc
+// TracerSolarChargeController chargeController(&Serial1);
+
 void setup() {
   Serial.begin(57600);
 }
