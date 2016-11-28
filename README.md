@@ -88,16 +88,15 @@ float current_voltage = carge_controller.battery;
 ```
 You can check public values.
 ```c
-float   battery;           // Current battery voltage.
-float   batteryHistory[3]; // History of battery voltage.
-float   pv;                // ?
-float   loadCurrent;       // ?
-float   overDischarge;     // ?
-float   batteryMax;        // Voltage to stop charging by the controller.
-uint8_t full;              // Return true if the battery is full.
-uint8_t charging;          // Return true if the controller is charging.
-int8_t  temp;              // Temperature of the controller.
-float   chargeCurrent;     // Voltage of the solar panel.
+float   batteryVoltage; // Current battery voltage.
+float   panelVoltage;   // Current panel voltage.
+float   loadCurrent;    // ?
+float   overDischarge;  // ?
+float   batteryMax;     // Voltage to stop charging by the controller.
+uint8_t full;           // Return true if the battery is full.
+uint8_t charging;       // Return true if the controller is charging.
+int8_t  temp;           // Temperature of the controller.
+float   chargeAmpere;   // Charging ampere.
 ```
 
 # Example
@@ -114,9 +113,9 @@ void loop() {
   if (chargeController.update()) {
     chargeController.printInfo(&Serial);
 
-    if ( chargeController.battery > 26.3 ) {
+    if ( chargeController.batteryVoltage > 26.3 ) {
       Serial.println('Battery voltage is high!');
-    } else if ( chargeController.battery < 24.0 ) {
+    } else if ( chargeController.batteryVoltage < 24.0 ) {
       Serial.println('Battery voltage is low!');
     } else {
       Serial.println('Battery voltage is normal.');
