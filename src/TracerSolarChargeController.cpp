@@ -26,8 +26,8 @@ void TracerSolarChargeController::initValues() {
   //cmd = tracerCmd;
 
   // init values
-  batteryVoltage = 0;
-  panelVoltage = 0;
+  batteryVolt = 0;
+  panelVolt = 0;
 }
 
 void TracerSolarChargeController::begin() {
@@ -71,8 +71,8 @@ bool TracerSolarChargeController::update() {
     return false;
   }
 
-  batteryVoltage = toFloat(buff, 9);
-  panelVoltage = toFloat(buff, 11);
+  batteryVolt = toFloat(buff, 9);
+  panelVolt = toFloat(buff, 11);
   //13-14 reserved
   loadCurrent = toFloat(buff, 15);
   overDischarge = toFloat(buff, 17);
@@ -86,7 +86,7 @@ bool TracerSolarChargeController::update() {
   full = buff[27];
   charging = buff[28];
   temp = buff[29] - 30;
-  chargeAmpere = toFloat(buff, 30);
+  chargeAmp = toFloat(buff, 30);
 
   return true;
 }
@@ -111,7 +111,7 @@ void TracerSolarChargeController::printInfo(SomeSerial* serial) {
   serial->println(loadCurrent);
 
   serial->print("Battery level: ");
-  serial->print(batteryVoltage);
+  serial->print(batteryVolt);
   serial->print("/");
   serial->println(batteryMax);
 
@@ -122,11 +122,11 @@ void TracerSolarChargeController::printInfo(SomeSerial* serial) {
   serial->println(temp);
 
   serial->print("Panel voltage: ");
-  serial->println(panelVoltage);
+  serial->println(panelVolt);
 
   serial->print("Charging: ");
   serial->println(charging ? "yes" : "no" );
 
   serial->print("Charge ampere: ");
-  serial->println(chargeAmpere);
+  serial->println(chargeAmp);
 }

@@ -115,7 +115,7 @@ void loop() {
     chargeController.printInfo(&Serial);
 
     if ( chargeController.battery > 26.3 ) {
-      Serial.println('Battery voltage is high!');
+      Serial.println('Battery volt is high!');
     } else if ( chargeController.battery < 24.0 ) {
       Serial.println('Battery voltage is low!');
     } else {

@@ -17,15 +17,15 @@ class TracerSolarChargeController {
   void printInfo(Serial_* serial);
 #endif
 
-  float batteryVoltage;
-  float panelVoltage;
+  float batteryVolt;
+  float panelVolt;
   float loadCurrent;
   float overDischarge;
   float batteryMax;
   uint8_t full;
   uint8_t charging;
   int8_t temp;
-  float chargeAmpere;
+  float chargeAmp;
 
   private:
   void initValues();
